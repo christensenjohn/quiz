@@ -216,7 +216,7 @@
                 startLyd.play();
 
                 startLyd.onended = function() {
-                    var minutter = parseInt(document.getElementById('minutter').value) || 1; 
+                    var minutter = parseInt(document.getElementById('minutter').value) || 1;
                     startTimer(minutter * 60);
                 };
             });
@@ -241,6 +241,11 @@
         function resetSpil() {
             // Reset spil funktionen her...
         }
+
+        function spilLyd(filnavn) {
+            var lyd = new Audio(filnavn);
+            lyd.play();
+        }
     </script>
 </head>
 <body>
@@ -262,10 +267,5 @@
         <button class="button" onclick="resetSpil()">Reset</button>
         <div id="spørgsmålViser"></div>
     </div>
-    <audio id="startLyd" src="start.mp3"></audio>
-    <audio id="stopLyd" src="stop.mp3"></audio>
-    <audio id="rigtigtSvarLyd" src="rigtigt.mp3"></audio>
-    <audio id="tikTakLyd" src="tik-tak.mp3"></audio>
-    <audio id="tidUdloebetLyd" src="tidudloebet.mp3"></audio>
 </body>
 </html>
