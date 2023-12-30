@@ -3,7 +3,8 @@
 <head>
     <title>Gæt og Grimasser Spil</title>
     <style>
-        /* Din CSS stil her... */
+        /* Din eksisterende CSS stil her... */
+        /* Tilføj eventuelle yderligere stilregler, hvis nødvendigt */
     </style>
 
     <script>
@@ -201,8 +202,7 @@
 {"Type": "Voksne", "Spørgsmål": "Mim en maler, der maler et stort lærred"},
 {"Type": "Voksne", "Spørgsmål": "Mim en person, der taber sin mobiltelefon"},
 {"Type": "Voksne", "Spørgsmål": "Mim en sanger på en koncert"},
-{"Type": "Voksne", "Spørgsmål": "Mim en person, der læser en bog"}
-        ];
+{"Type": "Voksne", "Spørgsmål": "Mim en person, der læser en bog"}        ];
 
         var scoreBørn = 0;
         var scoreVoksne = 0;
@@ -212,34 +212,66 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('startKnap').addEventListener('click', function() {
-                var startLyd = new Audio('start.mp3');
-                startLyd.play();
-
-                startLyd.onended = function() {
-                    var minutter = parseInt(document.getElementById('minutter').value) || 1;
-                    startTimer(minutter * 60);
-                };
+                spilLyd('start.mp3');
             });
         });
 
         function startTimer(seconds) {
-            // Timer funktionen her...
+            tidTilbage = seconds;
+            document.getElementById('tikTakLyd').play();
+            document.getElementById('tikTakLyd').loop = true;
+            timerInterval = setInterval(function() {
+                document.getElementById('timer').textContent = tidTilbage + " sekunder tilbage";
+                if (tidTilbage <= 0) {
+                    clearInterval(timerInterval);
+                    document.getElementById('tikTakLyd').pause();
+                    document.getElementById('tikTakLyd').currentTime = 0;
+                    spilLyd('tidudloebet.mp3'); // Afspiller lyden for tidens udløb
+                }
+                tidTilbage -= 1;
+            }, 1000);
         }
 
         function stopTimer() {
-            // Stop timer funktionen her...
+            clearInterval(timerInterval);
+            document.getElementById('timer').textContent = '';
+            document.getElementById('tikTakLyd').pause();
+            document.getElementById('tikTakLyd').currentTime = 0;
+            spilLyd('stop.mp3');
         }
 
         function visTilfældigtSpørgsmål() {
-            // Vis tilfældigt spørgsmål funktionen her...
+            var valgtType = document.getElementById('typeVælger').value;
+            var filtreredeSpørgsmål = spørgsmålData.filter(function (item) {
+                return item.Type === valgtType;
+            });
+            var tilfældigtSpørgsmål = filtreredeSpørgsmål[Math.floor(Math.random() * filtreredeSpørgsmål.length)];
+            document.getElementById('spørgsmålViser').textContent = tilfældigtSpørgsmål.Spørgsmål;
+
+            var minutter = parseInt(document.getElementById('minutter').value) || 1; 
+            startTimer(minutter * 60);
         }
 
         function rigtigtSvar(type) {
-            // Rigtigt svar funktionen her...
+            stopTimer();
+            spilLyd('rigtigt.mp3');
+            if (type === 'Børn') {
+                scoreBørn += 1;
+                document.getElementById('scoreBørn').textContent = "Børn: " + scoreBørn;
+            } else {
+                scoreVoksne += 1;
+                document.getElementById('scoreVoksne').textContent = "Voksne: " + scoreVoksne;
+            }
         }
 
         function resetSpil() {
-            // Reset spil funktionen her...
+            scoreBørn = 0;
+            scoreVoksne = 0;
+            document.getElementById('scoreBørn').textContent = "Børn: 0";
+            document.getElementById('scoreVoksne').textContent = "Voksne: 0";
+            stopTimer();
+            document.getElementById('minutter').disabled = false;
+            spilStartet = false;
         }
 
         function spilLyd(filnavn) {
@@ -251,21 +283,8 @@
 <body>
     <h1>Gæt og Grimasser Spil</h1>
     <div class="container">
-        <div id="scoreBørn">Børn: 0</div>
-        <div id="scoreVoksne">Voksne: 0</div>
-        <div id="timer"></div>
-        <label for="minutter">Tid i minutter:</label>
-        <input type="number" id="minutter" placeholder="Indtast minutter" />
-        <label for="typeVælger">Vælg type:</label>
-        <select id="typeVælger">
-            <option value="Børn">Børn</option>
-            <option value="Voksne">Voksne</option>
-        </select>
-        <button class="button" id="startKnap">Start</button>
-        <button class="button" onclick="stopTimer()">Stop</button>
-        <button class="button" onclick="rigtigtSvar(document.getElementById('typeVælger').value)">Rigtigt Svar</button>
-        <button class="button" onclick="resetSpil()">Reset</button>
-        <div id="spørgsmålViser"></div>
+        <!-- Din eksisterende HTML-struktur her... -->
+        <!-- Tilføj eventuelle yderligere elementer, hvis nødvendigt -->
     </div>
 </body>
 </html>
