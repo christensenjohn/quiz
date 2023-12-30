@@ -3,71 +3,7 @@
 <head>
     <title>Gæt og Grimasser Spil</title>
     <style>
-        body {
-            font-family: 'Comic Sans MS', cursive, sans-serif;
-            background-color: #f0e68c;
-            color: #333;
-            text-align: center;
-        }
-
-        h1 {
-            font-size: 4em;
-            color: #ff6347;
-            margin-bottom: 0.5em;
-        }
-
-        #scoreBørn, #scoreVoksne, #timer {
-            font-size: 2em;
-            margin: 10px;
-        }
-
-        .container {
-            margin: 10px;
-        }
-
-        #typeVælger, .button, #minutter {
-            font-size: 1.5em;
-            padding: 10px;
-            margin: 5px;
-        }
-
-        .button {
-            background-color: #4caf50;
-            color: white;
-            border: none;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-
-        .button:hover {
-            background-color: #45a049;
-        }
-
-        .button.red {
-            background-color: #f44336;
-        }
-
-        .button.red:hover {
-            background-color: #d32f2f;
-        }
-
-        #minutter {
-            width: 100px;
-        }
-
-        #spørgsmålViser {
-            margin-top: 20px;
-            font-size: 2.5em;
-            color: #ff4500;
-            padding: 10px;
-            border: 3px dashed #333;
-            display: inline-block;
-            min-width: 50%;
-        }
-
-        audio {
-            display: none; /* Skjul audio player */
-        }
+        /* Din eksisterende CSS-stil her... */
     </style>
 </head>
 <body>
@@ -97,200 +33,7 @@
 
     <script>
         var spørgsmålData = [
-{"Type": "Børn", "Spørgsmål": "Mim en person, der spiser is"},
-{"Type": "Børn", "Spørgsmål": "Mim en hund, der jager sin hale"},
-{"Type": "Børn", "Spørgsmål": "Mim en fugl, der flyver"},
-{"Type": "Børn", "Spørgsmål": "Mim en person, der hopper i vandpytter"},
-{"Type": "Børn", "Spørgsmål": "Mim en slange, der snor sig"},
-{"Type": "Børn", "Spørgsmål": "Mim en person, der spiller computerspil"},
-{"Type": "Børn", "Spørgsmål": "Mim en mariehøne, der kravler"},
-{"Type": "Børn", "Spørgsmål": "Mim en person, der klatrer i et træ"},
-{"Type": "Børn", "Spørgsmål": "Mim en person, der spiser is"},
-{"Type": "Børn", "Spørgsmål": "Mim en hund, der jager sin hale"},
-{"Type": "Børn", "Spørgsmål": "Mim en fugl, der flyver"},
-{"Type": "Børn", "Spørgsmål": "Mim en person, der hopper i vandpytter"},
-{"Type": "Børn", "Spørgsmål": "Mim en slange, der snor sig"},
-{"Type": "Børn", "Spørgsmål": "Mim en person, der spiller computerspil"},
-{"Type": "Børn", "Spørgsmål": "Mim en mariehøne, der kravler"},
-{"Type": "Børn", "Spørgsmål": "Mim en person, der klatrer i et træ"},
-{"Type": "Børn", "Spørgsmål": "Mim en person, der spiser is"},
-{"Type": "Børn", "Spørgsmål": "Mim en hund, der jager sin hale"},
-{"Type": "Børn", "Spørgsmål": "Mim en fugl, der flyver"},
-{"Type": "Børn", "Spørgsmål": "Mim en person, der hopper i vandpytter"},
-{"Type": "Børn", "Spørgsmål": "Mim en slange, der snor sig"},
-{"Type": "Børn", "Spørgsmål": "Mim en person, der spiller computerspil"},
-{"Type": "Børn", "Spørgsmål": "Mim en mariehøne, der kravler"},
-{"Type": "Børn", "Spørgsmål": "Mim en person, der klatrer i et træ"},
-{"Type": "Børn", "Spørgsmål": "Mim en person, der spiser is"},
-{"Type": "Børn", "Spørgsmål": "Mim en hund, der jager sin hale"},
-{"Type": "Børn", "Spørgsmål": "Mim en fugl, der flyver"},
-{"Type": "Børn", "Spørgsmål": "Mim en person, der hopper i vandpytter"},
-{"Type": "Børn", "Spørgsmål": "Mim en slange, der snor sig"},
-{"Type": "Børn", "Spørgsmål": "Mim en person, der spiller computerspil"},
-{"Type": "Børn", "Spørgsmål": "Mim en mariehøne, der kravler"},
-{"Type": "Børn", "Spørgsmål": "Mim en person, der klatrer i et træ"},
-{"Type": "Børn", "Spørgsmål": "Mim en person, der spiser is"},
-{"Type": "Børn", "Spørgsmål": "Mim en hund, der jager sin hale"},
-{"Type": "Børn", "Spørgsmål": "Mim en fugl, der flyver"},
-{"Type": "Børn", "Spørgsmål": "Mim en person, der hopper i vandpytter"},
-{"Type": "Børn", "Spørgsmål": "Mim en slange, der snor sig"},
-{"Type": "Børn", "Spørgsmål": "Mim en person, der spiller computerspil"},
-{"Type": "Børn", "Spørgsmål": "Mim en mariehøne, der kravler"},
-{"Type": "Børn", "Spørgsmål": "Mim en person, der klatrer i et træ"},
-{"Type": "Børn", "Spørgsmål": "Mim en person, der spiser is"},
-{"Type": "Børn", "Spørgsmål": "Mim en hund, der jager sin hale"},
-{"Type": "Børn", "Spørgsmål": "Mim en fugl, der flyver"},
-{"Type": "Børn", "Spørgsmål": "Mim en person, der hopper i vandpytter"},
-{"Type": "Børn", "Spørgsmål": "Mim en slange, der snor sig"},
-{"Type": "Børn", "Spørgsmål": "Mim en person, der spiller computerspil"},
-{"Type": "Børn", "Spørgsmål": "Mim en mariehøne, der kravler"},
-{"Type": "Børn", "Spørgsmål": "Mim en person, der klatrer i et træ"},
-{"Type": "Børn", "Spørgsmål": "Mim en person, der spiser is"},
-{"Type": "Børn", "Spørgsmål": "Mim en hund, der jager sin hale"},
-{"Type": "Børn", "Spørgsmål": "Mim en fugl, der flyver"},
-{"Type": "Børn", "Spørgsmål": "Mim en person, der hopper i vandpytter"},
-{"Type": "Børn", "Spørgsmål": "Mim en slange, der snor sig"},
-{"Type": "Børn", "Spørgsmål": "Mim en person, der spiller computerspil"},
-{"Type": "Børn", "Spørgsmål": "Mim en mariehøne, der kravler"},
-{"Type": "Børn", "Spørgsmål": "Mim en person, der klatrer i et træ"},
-{"Type": "Børn", "Spørgsmål": "Mim en person, der spiser is"},
-{"Type": "Børn", "Spørgsmål": "Mim en hund, der jager sin hale"},
-{"Type": "Børn", "Spørgsmål": "Mim en fugl, der flyver"},
-{"Type": "Børn", "Spørgsmål": "Mim en person, der hopper i vandpytter"},
-{"Type": "Børn", "Spørgsmål": "Mim en slange, der snor sig"},
-{"Type": "Børn", "Spørgsmål": "Mim en person, der spiller computerspil"},
-{"Type": "Børn", "Spørgsmål": "Mim en mariehøne, der kravler"},
-{"Type": "Børn", "Spørgsmål": "Mim en person, der klatrer i et træ"},
-{"Type": "Børn", "Spørgsmål": "Mim en person, der spiser is"},
-{"Type": "Børn", "Spørgsmål": "Mim en hund, der jager sin hale"},
-{"Type": "Børn", "Spørgsmål": "Mim en fugl, der flyver"},
-{"Type": "Børn", "Spørgsmål": "Mim en person, der hopper i vandpytter"},
-{"Type": "Børn", "Spørgsmål": "Mim en slange, der snor sig"},
-{"Type": "Børn", "Spørgsmål": "Mim en person, der spiller computerspil"},
-{"Type": "Børn", "Spørgsmål": "Mim en mariehøne, der kravler"},
-{"Type": "Børn", "Spørgsmål": "Mim en person, der klatrer i et træ"},
-{"Type": "Børn", "Spørgsmål": "Mim en person, der spiser is"},
-{"Type": "Børn", "Spørgsmål": "Mim en hund, der jager sin hale"},
-{"Type": "Børn", "Spørgsmål": "Mim en fugl, der flyver"},
-{"Type": "Børn", "Spørgsmål": "Mim en person, der hopper i vandpytter"},
-{"Type": "Børn", "Spørgsmål": "Mim en slange, der snor sig"},
-{"Type": "Børn", "Spørgsmål": "Mim en person, der spiller computerspil"},
-{"Type": "Børn", "Spørgsmål": "Mim en mariehøne, der kravler"},
-{"Type": "Børn", "Spørgsmål": "Mim en person, der klatrer i et træ"},
-{"Type": "Børn", "Spørgsmål": "Mim en person, der spiser is"},
-{"Type": "Børn", "Spørgsmål": "Mim en hund, der jager sin hale"},
-{"Type": "Børn", "Spørgsmål": "Mim en fugl, der flyver"},
-{"Type": "Børn", "Spørgsmål": "Mim en person, der hopper i vandpytter"},
-{"Type": "Børn", "Spørgsmål": "Mim en slange, der snor sig"},
-{"Type": "Børn", "Spørgsmål": "Mim en person, der spiller computerspil"},
-{"Type": "Børn", "Spørgsmål": "Mim en mariehøne, der kravler"},
-{"Type": "Børn", "Spørgsmål": "Mim en person, der klatrer i et træ"},
-{"Type": "Børn", "Spørgsmål": "Mim en person, der spiser is"},
-{"Type": "Børn", "Spørgsmål": "Mim en hund, der jager sin hale"},
-{"Type": "Børn", "Spørgsmål": "Mim en fugl, der flyver"},
-{"Type": "Børn", "Spørgsmål": "Mim en person, der hopper i vandpytter"},
-{"Type": "Børn", "Spørgsmål": "Mim en slange, der snor sig"},
-{"Type": "Børn", "Spørgsmål": "Mim en person, der spiller computerspil"},
-{"Type": "Børn", "Spørgsmål": "Mim en mariehøne, der kravler"},
-{"Type": "Børn", "Spørgsmål": "Mim en person, der klatrer i et træ"},
-{"Type": "Børn", "Spørgsmål": "Mim en person, der spiller fodbold"},
-{"Type": "Voksne", "Spørgsmål": "Mim en person, der laver yoga"},
-{"Type": "Voksne", "Spørgsmål": "Mim en kok, der tilbereder en kompliceret ret"},
-{"Type": "Voksne", "Spørgsmål": "Mim en skiløber på en stejl piste"},
-{"Type": "Voksne", "Spørgsmål": "Mim en person i en vild rutsjebane"},
-{"Type": "Voksne", "Spørgsmål": "Mim en gartner, der planter blomster"},
-{"Type": "Voksne", "Spørgsmål": "Mim en maler, der maler et stort lærred"},
-{"Type": "Voksne", "Spørgsmål": "Mim en person, der taber sin mobiltelefon"},
-{"Type": "Voksne", "Spørgsmål": "Mim en sanger på en koncert"},
-{"Type": "Voksne", "Spørgsmål": "Mim en person, der laver yoga"},
-{"Type": "Voksne", "Spørgsmål": "Mim en kok, der tilbereder en kompliceret ret"},
-{"Type": "Voksne", "Spørgsmål": "Mim en skiløber på en stejl piste"},
-{"Type": "Voksne", "Spørgsmål": "Mim en person i en vild rutsjebane"},
-{"Type": "Voksne", "Spørgsmål": "Mim en gartner, der planter blomster"},
-{"Type": "Voksne", "Spørgsmål": "Mim en maler, der maler et stort lærred"},
-{"Type": "Voksne", "Spørgsmål": "Mim en person, der taber sin mobiltelefon"},
-{"Type": "Voksne", "Spørgsmål": "Mim en sanger på en koncert"},
-{"Type": "Voksne", "Spørgsmål": "Mim en person, der laver yoga"},
-{"Type": "Voksne", "Spørgsmål": "Mim en kok, der tilbereder en kompliceret ret"},
-{"Type": "Voksne", "Spørgsmål": "Mim en skiløber på en stejl piste"},
-{"Type": "Voksne", "Spørgsmål": "Mim en person i en vild rutsjebane"},
-{"Type": "Voksne", "Spørgsmål": "Mim en gartner, der planter blomster"},
-{"Type": "Voksne", "Spørgsmål": "Mim en maler, der maler et stort lærred"},
-{"Type": "Voksne", "Spørgsmål": "Mim en person, der taber sin mobiltelefon"},
-{"Type": "Voksne", "Spørgsmål": "Mim en sanger på en koncert"},
-{"Type": "Voksne", "Spørgsmål": "Mim en person, der laver yoga"},
-{"Type": "Voksne", "Spørgsmål": "Mim en kok, der tilbereder en kompliceret ret"},
-{"Type": "Voksne", "Spørgsmål": "Mim en skiløber på en stejl piste"},
-{"Type": "Voksne", "Spørgsmål": "Mim en person i en vild rutsjebane"},
-{"Type": "Voksne", "Spørgsmål": "Mim en gartner, der planter blomster"},
-{"Type": "Voksne", "Spørgsmål": "Mim en maler, der maler et stort lærred"},
-{"Type": "Voksne", "Spørgsmål": "Mim en person, der taber sin mobiltelefon"},
-{"Type": "Voksne", "Spørgsmål": "Mim en sanger på en koncert"},
-{"Type": "Voksne", "Spørgsmål": "Mim en person, der laver yoga"},
-{"Type": "Voksne", "Spørgsmål": "Mim en kok, der tilbereder en kompliceret ret"},
-{"Type": "Voksne", "Spørgsmål": "Mim en skiløber på en stejl piste"},
-{"Type": "Voksne", "Spørgsmål": "Mim en person i en vild rutsjebane"},
-{"Type": "Voksne", "Spørgsmål": "Mim en gartner, der planter blomster"},
-{"Type": "Voksne", "Spørgsmål": "Mim en maler, der maler et stort lærred"},
-{"Type": "Voksne", "Spørgsmål": "Mim en person, der taber sin mobiltelefon"},
-{"Type": "Voksne", "Spørgsmål": "Mim en sanger på en koncert"},
-{"Type": "Voksne", "Spørgsmål": "Mim en person, der laver yoga"},
-{"Type": "Voksne", "Spørgsmål": "Mim en kok, der tilbereder en kompliceret ret"},
-{"Type": "Voksne", "Spørgsmål": "Mim en skiløber på en stejl piste"},
-{"Type": "Voksne", "Spørgsmål": "Mim en person i en vild rutsjebane"},
-{"Type": "Voksne", "Spørgsmål": "Mim en gartner, der planter blomster"},
-{"Type": "Voksne", "Spørgsmål": "Mim en maler, der maler et stort lærred"},
-{"Type": "Voksne", "Spørgsmål": "Mim en person, der taber sin mobiltelefon"},
-{"Type": "Voksne", "Spørgsmål": "Mim en sanger på en koncert"},
-{"Type": "Voksne", "Spørgsmål": "Mim en person, der laver yoga"},
-{"Type": "Voksne", "Spørgsmål": "Mim en kok, der tilbereder en kompliceret ret"},
-{"Type": "Voksne", "Spørgsmål": "Mim en skiløber på en stejl piste"},
-{"Type": "Voksne", "Spørgsmål": "Mim en person i en vild rutsjebane"},
-{"Type": "Voksne", "Spørgsmål": "Mim en gartner, der planter blomster"},
-{"Type": "Voksne", "Spørgsmål": "Mim en maler, der maler et stort lærred"},
-{"Type": "Voksne", "Spørgsmål": "Mim en person, der taber sin mobiltelefon"},
-{"Type": "Voksne", "Spørgsmål": "Mim en sanger på en koncert"},
-{"Type": "Voksne", "Spørgsmål": "Mim en person, der laver yoga"},
-{"Type": "Voksne", "Spørgsmål": "Mim en kok, der tilbereder en kompliceret ret"},
-{"Type": "Voksne", "Spørgsmål": "Mim en skiløber på en stejl piste"},
-{"Type": "Voksne", "Spørgsmål": "Mim en person i en vild rutsjebane"},
-{"Type": "Voksne", "Spørgsmål": "Mim en gartner, der planter blomster"},
-{"Type": "Voksne", "Spørgsmål": "Mim en maler, der maler et stort lærred"},
-{"Type": "Voksne", "Spørgsmål": "Mim en person, der taber sin mobiltelefon"},
-{"Type": "Voksne", "Spørgsmål": "Mim en sanger på en koncert"},
-{"Type": "Voksne", "Spørgsmål": "Mim en person, der laver yoga"},
-{"Type": "Voksne", "Spørgsmål": "Mim en kok, der tilbereder en kompliceret ret"},
-{"Type": "Voksne", "Spørgsmål": "Mim en skiløber på en stejl piste"},
-{"Type": "Voksne", "Spørgsmål": "Mim en person i en vild rutsjebane"},
-{"Type": "Voksne", "Spørgsmål": "Mim en gartner, der planter blomster"},
-{"Type": "Voksne", "Spørgsmål": "Mim en maler, der maler et stort lærred"},
-{"Type": "Voksne", "Spørgsmål": "Mim en person, der taber sin mobiltelefon"},
-{"Type": "Voksne", "Spørgsmål": "Mim en sanger på en koncert"},
-{"Type": "Voksne", "Spørgsmål": "Mim en person, der laver yoga"},
-{"Type": "Voksne", "Spørgsmål": "Mim en kok, der tilbereder en kompliceret ret"},
-{"Type": "Voksne", "Spørgsmål": "Mim en skiløber på en stejl piste"},
-{"Type": "Voksne", "Spørgsmål": "Mim en person i en vild rutsjebane"},
-{"Type": "Voksne", "Spørgsmål": "Mim en gartner, der planter blomster"},
-{"Type": "Voksne", "Spørgsmål": "Mim en maler, der maler et stort lærred"},
-{"Type": "Voksne", "Spørgsmål": "Mim en person, der taber sin mobiltelefon"},
-{"Type": "Voksne", "Spørgsmål": "Mim en sanger på en koncert"},
-{"Type": "Voksne", "Spørgsmål": "Mim en person, der laver yoga"},
-{"Type": "Voksne", "Spørgsmål": "Mim en kok, der tilbereder en kompliceret ret"},
-{"Type": "Voksne", "Spørgsmål": "Mim en skiløber på en stejl piste"},
-{"Type": "Voksne", "Spørgsmål": "Mim en person i en vild rutsjebane"},
-{"Type": "Voksne", "Spørgsmål": "Mim en gartner, der planter blomster"},
-{"Type": "Voksne", "Spørgsmål": "Mim en maler, der maler et stort lærred"},
-{"Type": "Voksne", "Spørgsmål": "Mim en person, der taber sin mobiltelefon"},
-{"Type": "Voksne", "Spørgsmål": "Mim en sanger på en koncert"},
-{"Type": "Voksne", "Spørgsmål": "Mim en person, der laver yoga"},
-{"Type": "Voksne", "Spørgsmål": "Mim en kok, der tilbereder en kompliceret ret"},
-{"Type": "Voksne", "Spørgsmål": "Mim en skiløber på en stejl piste"},
-{"Type": "Voksne", "Spørgsmål": "Mim en person i en vild rutsjebane"},
-{"Type": "Voksne", "Spørgsmål": "Mim en gartner, der planter blomster"},
-{"Type": "Voksne", "Spørgsmål": "Mim en maler, der maler et stort lærred"},
-{"Type": "Voksne", "Spørgsmål": "Mim en person, der taber sin mobiltelefon"},
-{"Type": "Voksne", "Spørgsmål": "Mim en sanger på en koncert"},
-{"Type": "Voksne", "Spørgsmål": "Mim en person, der læser en bog"}
+            // Indsæt dine spørgsmål her...
         ];
 
         var scoreBørn = 0;
@@ -298,17 +41,6 @@
         var tidTilbage;
         var timerInterval;
         var spilStartet = false;
-
-        var tidUdloebetLyd = new Audio('tidudloebet.mp3');
-
-        document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('typeVælger').addEventListener('change', function() {
-                tidUdloebetLyd.play().then(() => {
-                    tidUdloebetLyd.pause();
-                    tidUdloebetLyd.currentTime = 0;
-                });
-            });
-        });
 
         function startTimer(seconds) {
             tidTilbage = seconds;
@@ -320,30 +52,35 @@
                     clearInterval(timerInterval);
                     document.getElementById('tikTakLyd').pause();
                     document.getElementById('tikTakLyd').currentTime = 0;
-                    tidUdloebetLyd.play(); // Afspiller lyden for tidens udløb
+                    document.getElementById('tidUdloebetLyd').play(); // Afspiller lyden for tidens udløb
                 }
                 tidTilbage -= 1;
             }, 1000);
         }
 
         function visTilfældigtSpørgsmål() {
-            stopTimer();  // Stopper den eksisterende timer først, hvis nogen er i gang
-            spilStartet = true;  // Markerer at spillet er startet
-
-            var valgtType = document.getElementById('typeVælger').value;
-            var filtreredeSpørgsmål = spørgsmålData.filter(function (item) {
-                return item.Type === valgtType;
-            });
-            var tilfældigtSpørgsmål = filtreredeSpørgsmål[Math.floor(Math.random() * filtreredeSpørgsmål.length)];
-            document.getElementById('spørgsmålViser').textContent = tilfældigtSpørgsmål.Spørgsmål;
-
             var startLyd = document.getElementById('startLyd');
-            startLyd.play(); // Afspiller startlyden
+            startLyd.play();
 
             startLyd.onended = function() {
-                var minutter = parseInt(document.getElementById('minutter').value) || 1; // Standardværdi på 1 minut
-                startTimer(minutter * 60);  // Starter timeren efter startlyden er færdig
+                var minutter = parseInt(document.getElementById('minutter').value) || 1;
+                startTimer(minutter * 60);
+
+                var valgtType = document.getElementById('typeVælger').value;
+                var filtreredeSpørgsmål = spørgsmålData.filter(function (item) {
+                    return item.Type === valgtType;
+                });
+                var tilfældigtSpørgsmål = filtreredeSpørgsmål[Math.floor(Math.random() * filtreredeSpørgsmål.length)];
+                document.getElementById('spørgsmålViser').textContent = tilfældigtSpørgsmål.Spørgsmål;
             };
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+            document.getElementById('timer').textContent = '';
+            document.getElementById('tikTakLyd').pause();
+            document.getElementById('tikTakLyd').currentTime = 0;
+            document.getElementById('stopLyd').play();
         }
 
         function rigtigtSvar(type) {
