@@ -2,15 +2,98 @@
 <html>
 <head>
     <title>Gæt og Grimasser Spil</title>
-    <!-- Din eksisterende CSS-stil her... -->
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background-color: #f0e68c;
+            color: #333;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 4em;
+            color: #ff6347;
+            margin-bottom: 0.5em;
+        }
+
+        #scoreBørn, #scoreVoksne, #timer {
+            font-size: 2em;
+            margin: 10px;
+        }
+
+        .container {
+            margin: 10px;
+        }
+
+        #typeVælger, .button, #minutter {
+            font-size: 1.5em;
+            padding: 10px;
+            margin: 5px;
+        }
+
+        .button {
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .button:hover {
+            background-color: #45a049;
+        }
+
+        .button.red {
+            background-color: #f44336;
+        }
+
+        .button.red:hover {
+            background-color: #d32f2f;
+        }
+
+        #minutter {
+            width: 100px;
+        }
+
+        #spørgsmålViser {
+            margin-top: 20px;
+            font-size: 2.5em;
+            color: #ff4500;
+            padding: 10px;
+            border: 3px dashed #333;
+            display: inline-block;
+            min-width: 50%;
+        }
+
+        audio {
+            display: none; /* Skjul audio player */
+        }
+    </style>
 </head>
 <body>
     <h1>Gæt og Grimasser Spil</h1>
     <div class="container">
-        <!-- Din eksisterende HTML-struktur... -->
-        <button class="button" id="startKnap">Start</button>
+        <div id="scoreBørn">Børn: 0</div>
+        <div id="scoreVoksne">Voksne: 0</div>
         <div id="timer"></div>
+        <label for="minutter">Tid i minutter:</label>
+        <input type="number" id="minutter" placeholder="Indtast minutter" />
+        <label for="typeVælger">Vælg type:</label>
+        <select id="typeVælger">
+            <option value="Børn">Børn</option>
+            <option value="Voksne">Voksne</option>
+        </select>
+        <button class="button" onclick="visTilfældigtSpørgsmål()">Start</button>
+        <button class="button" onclick="stopTimer()">Stop</button>
+        <button class="button" onclick="rigtigtSvar(document.getElementById('typeVælger').value)">Rigtigt Svar</button>
+        <button class="button" onclick="resetSpil()">Reset</button>
+        <div id="spørgsmålViser"></div>
     </div>
+    <audio id="startLyd" src="start.mp3"></audio>
+    <audio id="stopLyd" src="stop.mp3"></audio>
+    <audio id="rigtigtSvarLyd" src="rigtigt.mp3"></audio>
+    <audio id="tikTakLyd" src="tik-tak.mp3"></audio>
+    <audio id="tidUdloebetLyd" src="tidudloebet.mp3"></audio>
 
     <script>
         var spørgsmålData = [
@@ -216,39 +299,74 @@
         var timerInterval;
         var spilStartet = false;
 
-        document.addEventListener('DOMContentLoaded', function() {
-            var tidUdloebetLyd = new Audio('tidudloebet.mp3');
-            var tid = 5; // Antal sekunder i nedtællingen
+        var tidUdloebetLyd = new Audio('tidudloebet.mp3');
 
-            document.getElementById('startKnap').addEventListener('click', function() {
-                // Initialiser lydafspilningen som reaktion på brugerhandling
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('typeVælger').addEventListener('change', function() {
                 tidUdloebetLyd.play().then(() => {
                     tidUdloebetLyd.pause();
                     tidUdloebetLyd.currentTime = 0;
                 });
-
-                startNedtælling();
-                this.disabled = true; // Deaktiverer startknappen under nedtællingen
             });
-
-            function startNedtælling() {
-                document.getElementById('timer').textContent = tid;
-                tid--;
-                if(tid < 0) {
-                    afslutNedtælling();
-                    return;
-                }
-                setTimeout(startNedtælling, 1000);
-            }
-
-            function afslutNedtælling() {
-                tidUdloebetLyd.play(); // Nu kan vi sikkert afspille lyden
-                tid = 5;
-                document.getElementById('startKnap').disabled = false; // Aktiverer startknappen igen
-            }
         });
 
-        // Resten af dine funktioner...
+        function startTimer(seconds) {
+            tidTilbage = seconds;
+            document.getElementById('tikTakLyd').play();
+            document.getElementById('tikTakLyd').loop = true;
+            timerInterval = setInterval(function() {
+                document.getElementById('timer').textContent = tidTilbage + " sekunder tilbage";
+                if (tidTilbage <= 0) {
+                    clearInterval(timerInterval);
+                    document.getElementById('tikTakLyd').pause();
+                    document.getElementById('tikTakLyd').currentTime = 0;
+                    tidUdloebetLyd.play(); // Afspiller lyden for tidens udløb
+                }
+                tidTilbage -= 1;
+            }, 1000);
+        }
+
+        function visTilfældigtSpørgsmål() {
+            stopTimer();  // Stopper den eksisterende timer først, hvis nogen er i gang
+            spilStartet = true;  // Markerer at spillet er startet
+
+            var valgtType = document.getElementById('typeVælger').value;
+            var filtreredeSpørgsmål = spørgsmålData.filter(function (item) {
+                return item.Type === valgtType;
+            });
+            var tilfældigtSpørgsmål = filtreredeSpørgsmål[Math.floor(Math.random() * filtreredeSpørgsmål.length)];
+            document.getElementById('spørgsmålViser').textContent = tilfældigtSpørgsmål.Spørgsmål;
+
+            var startLyd = document.getElementById('startLyd');
+            startLyd.play(); // Afspiller startlyden
+
+            startLyd.onended = function() {
+                var minutter = parseInt(document.getElementById('minutter').value) || 1; // Standardværdi på 1 minut
+                startTimer(minutter * 60);  // Starter timeren efter startlyden er færdig
+            };
+        }
+
+        function rigtigtSvar(type) {
+            stopTimer(); // Stopper timeren
+            document.getElementById('rigtigtSvarLyd').play();
+            if (type === 'Børn') {
+                scoreBørn += 1;
+                document.getElementById('scoreBørn').textContent = "Børn: " + scoreBørn;
+            } else {
+                scoreVoksne += 1;
+                document.getElementById('scoreVoksne').textContent = "Voksne: " + scoreVoksne;
+            }
+        }
+
+        function resetSpil() {
+            scoreBørn = 0;
+            scoreVoksne = 0;
+            document.getElementById('scoreBørn').textContent = "Børn: 0";
+            document.getElementById('scoreVoksne').textContent = "Voksne: 0";
+            stopTimer();
+            document.getElementById('minutter').disabled = false;
+            spilStartet = false;
+        }
     </script>
 </body>
 </html>
