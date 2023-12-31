@@ -4,7 +4,7 @@
     <!-- Din eksisterende head-sektion... -->
 </head>
 <body>
-    <h1>Gæt og Grimasser Spil</h1>
+    <h1>Gæt og Grimasser Spil 1</h1>
     <div class="container">
         <!-- Din eksisterende HTML-struktur... -->
         <label for="minutter">Tid i minutter:</label>
@@ -17,7 +17,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             var tidUdloebetLyd = new Audio('tidudloebet.mp3'); // Filen 'tidudloebet.mp3' ligger i rodmappen
-            var tikTakLyd = new Audio('tik-tak.mp3'); // Filen 'tik-tak.mp3' ligger i rodmappen
+            var tiktakLyd = new Audio('tik-tak.mp3'); // Filen 'tik-tak.mp3' ligger i rodmappen
             var tid = 0; // Initial værdi for timeren
             var timerInterval;
             document.getElementById('timer').style.visibility = "hidden"; // Skjul timeren ved start
@@ -30,6 +30,8 @@
                     startNedtælling();
                     this.disabled = true;
                     document.getElementById('minutter').disabled = true;
+                    tiktakLyd.loop = true; // Lad tiktak-lyden spille i baggrunden
+                    tiktakLyd.play();
                 }
             });
 
@@ -40,27 +42,22 @@
                     } else {
                         document.getElementById('timer').textContent = formatTid(tid);
                         tid--;
-                        if (tid === 5) {
-                            // Start tik-tak lyden 5 sekunder før tidudløbet
-                            tikTakLyd.play();
-                        } else if (tid === 0) {
-                            // Stop tik-tak lyden når tiden udløber
-                            tikTakLyd.pause();
-                            tikTakLyd.currentTime = 0;
-                        }
                     }
                 }, 1000);
             }
 
             function afslutNedtælling() {
                 clearInterval(timerInterval);
+                tiktakLyd.pause(); // Stop tiktak-lyden
                 tidUdloebetLyd.play();
                 tid = 0;
                 document.getElementById('startKnap').disabled = false;
                 document.getElementById('minutter').disabled = false;
                 document.getElementById('timer').style.visibility = "hidden"; // Skjul timeren igen
-                tikTakLyd.pause(); // Stop tik-tak lyden
-                tikTakLyd.currentTime = 0;
+                tidUdloebetLyd.addEventListener('ended', function() {
+                    // Lyden er afspillet, nulstil den
+                    this.currentTime = 0;
+                });
             }
 
             function formatTid(sekunder) {
