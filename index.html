@@ -3,7 +3,7 @@
 <head>
     <title>Gæt og Grimasser Spil</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Comic+Neue&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap');
 
         body {
             font-family: 'Comic Neue', 'Comic Sans MS', cursive, sans-serif;
@@ -70,7 +70,10 @@
         audio {
             display: none; /* Skjul audio player */
         }
+		<audio id="tidUdløbetLyd" src="alternativ_tidudloebet.mp3"></audio>
+
     </style>
+
 
 
     <script>
@@ -360,22 +363,24 @@
         var timerInterval;
         var spilStartet = false;
 
-        function startTimer(seconds) {
-            tidTilbage = seconds;
-            document.getElementById('tikTakLyd').play();
-            document.getElementById('tikTakLyd').loop = true;
-            timerInterval = setInterval(function() {
-                document.getElementById('timer').textContent = tidTilbage + " sekunder tilbage";
-                if (tidTilbage <= 0) {
-                    clearInterval(timerInterval);
-                    document.getElementById('tikTakLyd').pause();
-                    document.getElementById('tikTakLyd').currentTime = 0;
-                    document.getElementById('tidUdløbetLyd').play(); // Afspiller lyden for tidens udløb
-                    // Fjerner automatisk start af nyt spørgsmål
-                }
-                tidTilbage -= 1;
-            }, 1000);
-        }
+		function startTimer(seconds) {
+			tidTilbage = seconds;
+			document.getElementById('tikTakLyd').play();
+			document.getElementById('tikTakLyd').loop = true;
+			timerInterval = setInterval(function() {
+				document.getElementById('timer').textContent = tidTilbage + " sekunder tilbage";
+				if (tidTilbage <= 0) {
+					clearInterval(timerInterval);
+					document.getElementById('tikTakLyd').pause();
+					document.getElementById('tikTakLyd').currentTime = 0;
+					var tidUdløbetLyd = document.getElementById('tidUdløbetLyd');
+					tidUdløbetLyd.play().catch(function(error) {
+						console.error('Fejl ved afspilning af tidUdløbetLyd:', error);
+					}); // Afspiller lyden for tidens udløb
+				}
+				tidTilbage -= 1;
+			}, 1000);
+		}
 
         function stopTimer() {
             clearInterval(timerInterval);
