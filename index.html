@@ -7,51 +7,38 @@
     <style>
         @import url('fonts.googleapis.com');
 
-body {
-    /* Vi fjerner 'cursive' så den ikke vælger skråskrift på iPhone */
-    font-family: 'Comic Neue', 'Comic Sans MS', 'Chalkboard SE', 'Arial', sans-serif;
-    background-color: #f0e68c;
-    color: #333;
-    text-align: center;
-    padding: 20px;
-}
+        body {
+            font-family: 'Comic Neue', 'Comic Sans MS', 'Chalkboard SE', 'Arial', sans-serif;
+            background-color: #f0e68c;
+            color: #333;
+            text-align: center;
+            padding: 20px;
+        }
 
         h1 { font-size: 3.5em; color: #ff6347; margin-bottom: 10px; }
-        
         .container { background: rgba(255,255,255,0.8); padding: 20px; border-radius: 20px; display: inline-block; min-width: 350px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-
         #setupSkærm { margin-bottom: 20px; }
         .spiller-liste { list-style: none; padding: 0; text-align: left; max-width: 300px; margin: 20px auto; }
         .spiller-emne { background: #fff; padding: 10px; margin: 5px 0; border-radius: 5px; border-left: 5px solid #4caf50; display: flex; justify-content: space-between; align-items: center; }
-
         #spilSkærm { display: none; }
         #turIndikator { font-size: 2.2em; color: #2e8b57; font-weight: bold; margin: 15px 0; padding: 10px; background: #e0f2f1; border-radius: 10px; border: 2px solid #2e8b57; }
         #timer { font-size: 3em; color: #f44336; font-weight: bold; min-height: 1.2em; margin: 10px 0; }
-        
-        #spørgsmålViser {
-            margin: 20px 0; font-size: 2.2em; color: #ff4500; padding: 30px;
-            border: 4px dashed #333; display: inline-block; min-width: 80%;
-            background: #fff; border-radius: 15px; min-height: 100px;
-        }
-
+        #spørgsmålViser { margin: 20px 0; font-size: 2.2em; color: #ff4500; padding: 30px; border: 4px dashed #333; display: inline-block; min-width: 80%; background: #fff; border-radius: 15px; min-height: 100px; }
         .score-board { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 20px; }
         .score-kort { background: #333; color: white; padding: 10px 20px; border-radius: 10px; min-width: 120px; transition: 0.3s; }
         .score-kort.active { border: 4px solid #ff6347; transform: scale(1.1); background: #444; }
-
         .button { font-size: 1.2em; padding: 12px 25px; margin: 5px; border: none; cursor: pointer; border-radius: 8px; color: white; background: #4caf50; transition: 0.2s; font-weight: bold; }
         .button:hover { opacity: 0.9; transform: translateY(-2px); }
         .button.red { background: #f44336; }
         .button.orange { background: #ff8c00; }
         .button.blue { background: #2196f3; }
         .button.grey { background: #777; }
-
         input, select { font-size: 1.1em; padding: 10px; border-radius: 5px; border: 1px solid #ccc; margin: 5px; }
         .setting-box { background: #fff; padding: 15px; border-radius: 10px; margin-top: 10px; text-align: left; border: 1px solid #ddd; }
         audio { display: none; }
     </style>
 
     <script>
-        // --- INDSÆT DINE SPØRGSMÅL HER ---
 var spørgsmålData = [
     {"Type": "Børn", "Spørgsmål": "Mim en dinosaur, der brøler"},
     {"Type": "Børn", "Spørgsmål": "Mim en person, der børster tænder"},
@@ -506,17 +493,15 @@ var spørgsmålData = [
 
         var spillere = [];
         var nuværendeSpillerIndex = 0;
-        var børnSpørgsmål = [];
-        var voksneSpørgsmål = [];
+        var spørgsmål = [];
         var tidTilbage;
         var timerInterval;
         var spilMode = "stop";
 
         function tilføjSpiller() {
             var navnInput = document.getElementById('spillerNavn');
-            var typeInput = document.getElementById('spillerType');
             if (navnInput.value.trim() === "") return alert("Indtast venligst et navn");
-            spillere.push({ navn: navnInput.value.trim(), type: typeInput.value, point: 0 });
+            spillere.push({ navn: navnInput.value.trim(), point: 0 });
             navnInput.value = "";
             opdaterLobbyListe();
         }
@@ -530,23 +515,21 @@ var spørgsmålData = [
             var liste = document.getElementById('lobbyListe');
             liste.innerHTML = "";
             spillere.forEach((s, index) => {
-                liste.innerHTML += `<li class="spiller-emne"><span><strong>${s.navn}</strong> (${s.type})</span><button onclick="fjernSpiller(${index})" style="background:none; border:none; color:red; cursor:pointer; font-weight:bold;">✖</button></li>`;
+                liste.innerHTML += `<li class="spiller-emne"><span><strong>${s.navn}</strong></span><button onclick="fjernSpiller(${index})" style="background:none; border:none; color:red; cursor:pointer; font-weight:bold;">✖</button></li>`;
             });
         }
 
         function startSpillet() {
             if (spillere.length < 1) return alert("Tilføj mindst én spiller!");
-            
-            // iPhone Unlock - Vigtigt for 2025 iPhones!
+
             var lyde = ['startLyd', 'tikTakLyd', 'tidUdløbetLyd', 'rigtigtSvarLyd'];
             lyde.forEach(id => {
                 var lyd = document.getElementById(id);
-                lyd.play().then(() => { lyd.pause(); lyd.currentTime = 0; }).catch(e => console.log("Lyd-vækning venter"));
+                lyd.play().then(() => { lyd.pause(); lyd.currentTime = 0; }).catch(e => console.log("Venter på klik"));
             });
 
             spilMode = document.getElementById('modeVælger').value;
-            børnSpørgsmål = spørgsmålData.filter(q => q.Type === 'Børn');
-            voksneSpørgsmål = spørgsmålData.filter(q => q.Type === 'Voksne');
+            spørgsmål = spørgsmålData.slice(); // Copy the questions
 
             document.getElementById('setupSkærm').style.display = 'none';
             document.getElementById('spilSkærm').style.display = 'block';
@@ -556,29 +539,27 @@ var spørgsmålData = [
 
         function visNæsteTur() {
             var s = spillere[nuværendeSpillerIndex];
-            document.getElementById('turIndikator').textContent = `Det er ${s.navn}s tur (${s.type})`;
+            document.getElementById('turIndikator').textContent = `Det er ${s.navn}s tur`;
             document.getElementById('spørgsmålViser').textContent = "Klar?";
             opdaterScoreBoard();
         }
 
         function hentNytSpørgsmål() {
-            var s = spillere[nuværendeSpillerIndex];
-            var kilde = (s.type === 'Børn') ? børnSpørgsmål : voksneSpørgsmål;
-            if (kilde.length === 0) return "Ingen flere spørgsmål i denne kategori!";
-            var index = Math.floor(Math.random() * kilde.length);
-            var opgave = kilde[index];
-            kilde.splice(index, 1);
+            if (spørgsmål.length === 0) return "Ingen flere spørgsmål!";
+            var index = Math.floor(Math.random() * spørgsmål.length);
+            var opgave = spørgsmål[index];
+            spørgsmål.splice(index, 1);
             return opgave.Spørgsmål;
         }
 
         function startNæsteSpørgsmål() {
             stopTimer();
-            var spørgsmål = hentNytSpørgsmål();
-            document.getElementById('spørgsmålViser').textContent = spørgsmål;
-            if (spørgsmål !== "Ingen flere spørgsmål i denne kategori!") {
+            var nytSpørgsmål = hentNytSpørgsmål();
+            document.getElementById('spørgsmålViser').textContent = nytSpørgsmål;
+            if (nytSpørgsmål !== "Ingen flere spørgsmål!") {
                 var sek = (parseInt(document.getElementById('tidInput').value) || 1) * 60;
                 startTimer(sek);
-                document.getElementById('startLyd').play().catch(e => console.log("Play fejl"));
+                document.getElementById('startLyd').play().catch(e => {});
             }
         }
 
@@ -587,7 +568,7 @@ var spørgsmålData = [
         }
 
         function rigtigtSvar() {
-            document.getElementById('rigtigtSvarLyd').play().catch(e => console.log("Play fejl"));
+            document.getElementById('rigtigtSvarLyd').play().catch(e => {});
             spillere[nuværendeSpillerIndex].point++;
             opdaterScoreBoard();
             if (spilMode === "fortsæt" && tidTilbage > 0) {
@@ -602,17 +583,22 @@ var spørgsmålData = [
             tidTilbage = seconds;
             var tikTak = document.getElementById('tikTakLyd');
             var slutLyd = document.getElementById('tidUdløbetLyd');
-            tikTak.currentTime = 0;
-            tikTak.play().catch(e => console.log("Play fejl"));
-            tikTak.loop = true;
+            if(tikTak) {
+              tikTak.currentTime = 0;
+              tikTak.play().catch(e => {});
+              tikTak.loop = true;
+            }
+
 
             timerInterval = setInterval(() => {
                 document.getElementById('timer').textContent = tidTilbage + "s";
                 if (tidTilbage <= 0) {
                     clearInterval(timerInterval);
-                    tikTak.pause();
-                    slutLyd.currentTime = 0;
-                    slutLyd.play().catch(e => console.log("Lyd blokeret af iPhone"));
+                     if(tikTak) tikTak.pause();
+                    if(slutLyd) {
+                         slutLyd.currentTime = 0;
+                         slutLyd.play().catch(e => {});
+                    }
                     document.getElementById('timer').textContent = "TIDEN ER GÅET!";
                     if (spilMode === "fortsæt") setTimeout(næsteSpiller, 2500);
                 }
@@ -649,19 +635,13 @@ var spørgsmålData = [
 </head>
 <body>
 
-    <h1>Gæt & Grimasser 2025 🎭</h1>
+    <h1>Gæt & Grimasser 🎭</h1>
 
     <div id="setupSkærm" class="container">
         <h2>Lobby: Tilføj spillere</h2>
         <input type="text" id="spillerNavn" placeholder="Navn på spiller">
-        <select id="spillerType">
-            <option value="Børn">Barn</option>
-            <option value="Voksne">Voksen</option>
-        </select>
         <button class="button" onclick="tilføjSpiller()">Tilføj</button>
-        
         <ul id="lobbyListe" class="spiller-liste"></ul>
-        
         <div class="setting-box">
             <strong>Indstillinger:</strong><br>
             <label>Tid pr. runde (min): </label>
@@ -680,21 +660,19 @@ var spørgsmålData = [
         <div id="turIndikator"></div>
         <div id="timer"></div>
         <div id="spørgsmålViser">Klar?</div>
-        
         <br>
         <button class="button blue" onclick="startNæsteSpørgsmål()">Start tur</button>
         <button class="button orange" onclick="pasSpørgsmål()">Pas</button>
         <button class="button" onclick="rigtigtSvar()">Rigtigt!</button>
         <button class="button red" onclick="givOp()">Giv op / Næste</button>
-        
         <div class="score-board" id="scoreBoard"></div>
         <br>
         <button class="button grey" onclick="location.reload()">Afslut spil</button>
     </div>
 
-    <!-- Lydfiler -->
+    <!-- Rettet lyd-sektion -->
     <audio id="startLyd" src="start.mp3" preload="auto"></audio>
-    <audio id="tikTakLyd" src="tiktak.mp3" preload="auto"></audio>
+    <audio id="tikTakLyd" src="tik-tak.mp3" preload="auto"></audio>
     <audio id="tidUdløbetLyd" src="tidudloebet.mp3" preload="auto"></audio>
     <audio id="rigtigtSvarLyd" src="rigtigt.mp3" preload="auto"></audio>
 
