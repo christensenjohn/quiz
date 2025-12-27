@@ -53,6 +53,14 @@
             background-color: #d32f2f;
         }
 
+        /* Farve til Pas-knappen */
+        .button.orange {
+            background-color: #ff8c00;
+        }
+        .button.orange:hover {
+            background-color: #e67e00;
+        }
+
         #minutter {
             width: 100px;
         }
@@ -68,16 +76,13 @@
         }
 
         audio {
-            display: none; /* Skjul audio player */
+            display: none; 
         }
-		<audio id="tidUdløbetLyd" src="alternativ_tidudloebet.mp3"></audio>
-
     </style>
 
-
-
     <script>
-    var spørgsmålData = [
+        // Indsæt dine spørgsmål her
+var spørgsmålData = [
     {"Type": "Børn", "Spørgsmål": "Mim en dinosaur, der brøler"},
     {"Type": "Børn", "Spørgsmål": "Mim en person, der børster tænder"},
     {"Type": "Børn", "Spørgsmål": "Mim en popcornmaskine, der popper"},
@@ -381,7 +386,7 @@
     {"Type": "Voksne", "Spørgsmål": "Mim en person, der tager et selfie"},
     {"Type": "Voksne", "Spørgsmål": "Mim en person, der går i regnvejr"}
 ];
-
+ 
 
         var børnSpørgsmål = spørgsmålData.filter(item => item.Type === 'Børn');
         var voksneSpørgsmål = spørgsmålData.filter(item => item.Type === 'Voksne');
@@ -392,79 +397,98 @@
         var timerInterval;
         var spilStartet = false;
 
-		function startTimer(seconds) {
-			tidTilbage = seconds;
-			document.getElementById('tikTakLyd').play();
-			document.getElementById('tikTakLyd').loop = true;
-			timerInterval = setInterval(function() {
-				document.getElementById('timer').textContent = tidTilbage + " sekunder tilbage";
-				if (tidTilbage <= 0) {
-					clearInterval(timerInterval);
-					document.getElementById('tikTakLyd').pause();
-					document.getElementById('tikTakLyd').currentTime = 0;
-					var tidUdløbetLyd = document.getElementById('tidUdløbetLyd');
-					tidUdløbetLyd.play().catch(function(error) {
-						console.error('Fejl ved afspilning af tidUdløbetLyd:', error);
-					}); // Afspiller lyden for tidens udløb
-				}
-				tidTilbage -= 1;
-			}, 1000);
-		}
+        function startTimer(seconds) {
+            tidTilbage = seconds;
+            document.getElementById('tikTakLyd').play();
+            document.getElementById('tikTakLyd').loop = true;
+            timerInterval = setInterval(function() {
+                document.getElementById('timer').textContent = tidTilbage + " sekunder tilbage";
+                if (tidTilbage <= 0) {
+                    clearInterval(timerInterval);
+                    document.getElementById('tikTakLyd').pause();
+                    document.getElementById('tikTakLyd').currentTime = 0;
+                    var tidUdløbetLyd = document.getElementById('tidUdløbetLyd');
+                    tidUdløbetLyd.play().catch(function(error) {
+                        console.error('Fejl ved afspilning af tidUdløbetLyd:', error);
+                    });
+                }
+                tidTilbage -= 1;
+            }, 1000);
+        }
 
         function stopTimer() {
             clearInterval(timerInterval);
             document.getElementById('timer').textContent = '';
-            document.getElementById('tikTakLyd').pause();
-            document.getElementById('tikTakLyd').currentTime = 0;
+            if(document.getElementById('tikTakLyd')) {
+                document.getElementById('tikTakLyd').pause();
+                document.getElementById('tikTakLyd').currentTime = 0;
+            }
             document.getElementById('stopLyd').play();
         }
 
-        function visTilfældigtSpørgsmål() {
-            stopTimer();  // Stopper den eksisterende timer først, hvis nogen er i gang
-            spilStartet = true;  // Markerer at spillet er startet
+        // Ny funktion til at springe et spørgsmål over uden at stoppe timeren
+        function pasSpørgsmål() {
+            if (!spilStartet || tidTilbage <= 0) return;
 
             var valgtType = document.getElementById('typeVælger').value;
             var filtreredeSpørgsmål = valgtType === 'Børn' ? børnSpørgsmål : voksneSpørgsmål;
+
             if (filtreredeSpørgsmål.length === 0) {
                 document.getElementById('spørgsmålViser').textContent = "Ingen flere spørgsmål tilbage";
                 return;
             }
+
             var tilfældigtSpørgsmål = filtreredeSpørgsmål[Math.floor(Math.random() * filtreredeSpørgsmål.length)];
             document.getElementById('spørgsmålViser').textContent = tilfældigtSpørgsmål.Spørgsmål;
 
-            // Fjern det valgte spørgsmål fra arrayet
+            // Fjern det brugte spørgsmål
             if (valgtType === 'Børn') {
                 børnSpørgsmål = børnSpørgsmål.filter(item => item !== tilfældigtSpørgsmål);
             } else {
                 voksneSpørgsmål = voksneSpørgsmål.filter(item => item !== tilfældigtSpørgsmål);
             }
 
-            // Opdater spørgsmåltælleren
-            document.getElementById('spørgsmålTilbage').textContent = `Børn spørgsmål tilbage: ${børnSpørgsmål.length} | Voksne spørgsmål tilbage: ${voksneSpørgsmål.length}`;
+            opdaterTæller();
+        }
 
-            var startLyd = document.getElementById('startLyd');
+        function visTilfældigtSpørgsmål() {
+            stopTimer();  
+            spilStartet = true;  
 
-            // Tjek om afspilningsobjektet er blokeret og forsøg at afspille lyd igen ved klik
-            var playPromise = startLyd.play();
-            if (playPromise !== undefined) {
-                playPromise.catch(function(error) {
-                    console.log('Afspilning blokeret, tilføjer kliklytter');
-                    document.getElementById('startButton').addEventListener('click', function() {
-                        startLyd.play();
-                    });
-                }).then(function() {
-                    console.log('Lyd afspillet automatisk');
-                });
+            var valgtType = document.getElementById('typeVælger').value;
+            var filtreredeSpørgsmål = valgtType === 'Børn' ? børnSpørgsmål : voksneSpørgsmål;
+            
+            if (filtreredeSpørgsmål.length === 0) {
+                document.getElementById('spørgsmålViser').textContent = "Ingen flere spørgsmål tilbage";
+                return;
             }
 
+            var tilfældigtSpørgsmål = filtreredeSpørgsmål[Math.floor(Math.random() * filtreredeSpørgsmål.length)];
+            document.getElementById('spørgsmålViser').textContent = tilfældigtSpørgsmål.Spørgsmål;
+
+            if (valgtType === 'Børn') {
+                børnSpørgsmål = børnSpørgsmål.filter(item => item !== tilfældigtSpørgsmål);
+            } else {
+                voksneSpørgsmål = voksneSpørgsmål.filter(item => item !== tilfældigtSpørgsmål);
+            }
+
+            opdaterTæller();
+
+            var startLyd = document.getElementById('startLyd');
+            startLyd.play().catch(e => console.log("Lyd kræver interaktion"));
+
             startLyd.onended = function() {
-                var minutter = parseInt(document.getElementById('minutter').value) || 1; // Standardværdi på 1 minut
-                startTimer(minutter * 60);  // Starter timeren efter startlyden er færdig
+                var minutter = parseInt(document.getElementById('minutter').value) || 1;
+                startTimer(minutter * 60);  
             };
         }
 
+        function opdaterTæller() {
+            document.getElementById('spørgsmålTilbage').textContent = `Børn: ${børnSpørgsmål.length} | Voksne: ${voksneSpørgsmål.length}`;
+        }
+
         function rigtigtSvar(type) {
-            stopTimer(); // Stopper timeren
+            stopTimer(); 
             document.getElementById('rigtigtSvarLyd').play();
             if (type === 'Børn') {
                 scoreBørn += 1;
@@ -482,43 +506,47 @@
             voksneSpørgsmål = spørgsmålData.filter(item => item.Type === 'Voksne');
             document.getElementById('scoreBørn').textContent = "Børn: 0";
             document.getElementById('scoreVoksne').textContent = "Voksne: 0";
-            document.getElementById('spørgsmålTilbage').textContent = `Børn spørgsmål tilbage: ${børnSpørgsmål.length} | Voksne spørgsmål tilbage: ${voksneSpørgsmål.length}`;
+            opdaterTæller();
             stopTimer();
-            document.getElementById('minutter').disabled = false;
             spilStartet = false;
+            document.getElementById('spørgsmålViser').textContent = "";
         }
 
-        // Initielt opdatering af spørgsmåltælleren
-        window.onload = function() {
-            document.getElementById('spørgsmålTilbage').textContent = `Børn spørgsmål tilbage: ${børnSpørgsmål.length} | Voksne spørgsmål tilbage: ${voksneSpørgsmål.length}`;
-        };
+        window.onload = opdaterTæller;
     </script>
-
 </head>
 <body>
-    <h1>Gæt og Grimasser Spil</h1>
+    <h1>Gæt og Grimasser</h1>
     <div class="container">
         <div id="scoreBørn">Børn: 0</div>
         <div id="scoreVoksne">Voksne: 0</div>
         <div id="timer"></div>
         <div id="spørgsmålTilbage"></div>
-        <label for="minutter">Tid i minutter:</label>
-        <input type="number" id="minutter" placeholder="Indtast minutter" />
-        <label for="typeVælger">Vælg type:</label>
+        
+        <label for="minutter">Tid (min):</label>
+        <input type="number" id="minutter" value="1" />
+        
+        <label for="typeVælger">Type:</label>
         <select id="typeVælger">
             <option value="Børn">Børn</option>
-            <option value="Voksne">Voksne
+            <option value="Voksne">Voksne</option>
         </select>
-        <button id="startButton" class="button" onclick="visTilfældigtSpørgsmål()">Start</button>
-        <button class="button" onclick="stopTimer()">Stop</button>
+        <br><br>
+        
+        <button id="startButton" class="button" onclick="visTilfældigtSpørgsmål()">Start Ny Runde</button>
+        <button class="button orange" onclick="pasSpørgsmål()">Pas (Næste spørgsmål)</button>
         <button class="button" onclick="rigtigtSvar(document.getElementById('typeVælger').value)">Rigtigt Svar</button>
-        <button class="button" onclick="resetSpil()">Reset</button>
+        <button class="button red" onclick="stopTimer()">Stop</button>
+        <button class="button" onclick="resetSpil()">Reset Spil</button>
+        
         <div id="spørgsmålViser"></div>
     </div>
+
+    <!-- Lyde -->
     <audio id="startLyd" src="start.mp3"></audio>
     <audio id="stopLyd" src="stop.mp3"></audio>
+    <audio id="tikTakLyd" src="tiktak.mp3"></audio>
+    <audio id="tidUdløbetLyd" src="alternativ_tidudloebet.mp3"></audio>
     <audio id="rigtigtSvarLyd" src="rigtigt.mp3"></audio>
-    <audio id="tikTakLyd" src="tik-tak.mp3"></audio>
-    <audio id="tidUdløbetLyd" src="tid-udløbet.mp3"></audio>
 </body>
 </html>
