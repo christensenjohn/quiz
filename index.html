@@ -493,15 +493,23 @@ var spørgsmålData = [
 
         var spillere = [];
         var nuværendeSpillerIndex = 0;
-        var spørgsmål = [];
+        var børnSpørgsmål = [];
+        var voksneSpørgsmål = [];
         var tidTilbage;
         var timerInterval;
         var spilMode = "stop";
 
         function tilføjSpiller() {
             var navnInput = document.getElementById('spillerNavn');
+            var typeInput = document.getElementById('spillerType');
             if (navnInput.value.trim() === "") return alert("Indtast venligst et navn");
-            spillere.push({ navn: navnInput.value.trim(), point: 0 });
+            
+            spillere.push({ 
+                navn: navnInput.value.trim(), 
+                type: typeInput.value, 
+                point: 0 
+            });
+            
             navnInput.value = "";
             opdaterLobbyListe();
         }
@@ -515,22 +523,27 @@ var spørgsmålData = [
             var liste = document.getElementById('lobbyListe');
             liste.innerHTML = "";
             spillere.forEach((s, index) => {
-                liste.innerHTML += `<li class="spiller-emne"><span><strong>${s.navn}</strong></span><button onclick="fjernSpiller(${index})" style="background:none; border:none; color:red; cursor:pointer; font-weight:bold;">✖</button></li>`;
+                liste.innerHTML += `<li class="spiller-emne"><span><strong>${s.navn}</strong> (${s.type})</span><button onclick="fjernSpiller(${index})" style="background:none; border:none; color:red; cursor:pointer; font-weight:bold;">✖</button></li>`;
             });
         }
 
         function startSpillet() {
             if (spillere.length < 1) return alert("Tilføj mindst én spiller!");
 
+            // iPhone Lyd-vækning
             var lyde = ['startLyd', 'tikTakLyd', 'tidUdløbetLyd', 'rigtigtSvarLyd'];
             lyde.forEach(id => {
                 var lyd = document.getElementById(id);
-                lyd.play().then(() => { lyd.pause(); lyd.currentTime = 0; }).catch(e => console.log("Venter på klik"));
+                if (lyd) {
+                    lyd.play().then(() => { lyd.pause(); lyd.currentTime = 0; }).catch(e => console.log("Venter på klik"));
+                }
             });
 
-            spilMode = document.getElementById('modeVælger').value;
-            spørgsmål = spørgsmålData.slice(); // Copy the questions
+            // Fyld spørgsmålsbunker
+            børnSpørgsmål = spørgsmålData.filter(q => q.Type === "Børn");
+            voksneSpørgsmål = spørgsmålData.filter(q => q.Type === "Voksne");
 
+            spilMode = document.getElementById('modeVælger').value;
             document.getElementById('setupSkærm').style.display = 'none';
             document.getElementById('spilSkærm').style.display = 'block';
             opdaterScoreBoard();
@@ -539,24 +552,28 @@ var spørgsmålData = [
 
         function visNæsteTur() {
             var s = spillere[nuværendeSpillerIndex];
-            document.getElementById('turIndikator').textContent = `Det er ${s.navn}s tur`;
+            document.getElementById('turIndikator').textContent = `Det er ${s.navn}s tur (${s.type})`;
             document.getElementById('spørgsmålViser').textContent = "Klar?";
             opdaterScoreBoard();
         }
 
         function hentNytSpørgsmål() {
-            if (spørgsmål.length === 0) return "Ingen flere spørgsmål!";
-            var index = Math.floor(Math.random() * spørgsmål.length);
-            var opgave = spørgsmål[index];
-            spørgsmål.splice(index, 1);
+            var s = spillere[nuværendeSpillerIndex];
+            var bunke = (s.type === "Børn") ? børnSpørgsmål : voksneSpørgsmål;
+            
+            if (bunke.length === 0) return "Ingen flere spørgsmål i denne kategori!";
+            
+            var index = Math.floor(Math.random() * bunke.length);
+            var opgave = bunke[index];
+            bunke.splice(index, 1);
             return opgave.Spørgsmål;
         }
 
         function startNæsteSpørgsmål() {
             stopTimer();
-            var nytSpørgsmål = hentNytSpørgsmål();
-            document.getElementById('spørgsmålViser').textContent = nytSpørgsmål;
-            if (nytSpørgsmål !== "Ingen flere spørgsmål!") {
+            var nyt = hentNytSpørgsmål();
+            document.getElementById('spørgsmålViser').textContent = nyt;
+            if (nyt !== "Ingen flere spørgsmål i denne kategori!") {
                 var sek = (parseInt(document.getElementById('tidInput').value) || 1) * 60;
                 startTimer(sek);
                 document.getElementById('startLyd').play().catch(e => {});
@@ -583,18 +600,18 @@ var spørgsmålData = [
             tidTilbage = seconds;
             var tikTak = document.getElementById('tikTakLyd');
             var slutLyd = document.getElementById('tidUdløbetLyd');
+            
             if(tikTak) {
               tikTak.currentTime = 0;
               tikTak.play().catch(e => {});
               tikTak.loop = true;
             }
 
-
             timerInterval = setInterval(() => {
                 document.getElementById('timer').textContent = tidTilbage + "s";
                 if (tidTilbage <= 0) {
                     clearInterval(timerInterval);
-                     if(tikTak) tikTak.pause();
+                    if(tikTak) tikTak.pause();
                     if(slutLyd) {
                          slutLyd.currentTime = 0;
                          slutLyd.play().catch(e => {});
@@ -640,6 +657,11 @@ var spørgsmålData = [
     <div id="setupSkærm" class="container">
         <h2>Lobby: Tilføj spillere</h2>
         <input type="text" id="spillerNavn" placeholder="Navn på spiller">
+        <!-- HER ER VALGET TILBAGE -->
+        <select id="spillerType">
+            <option value="Børn">Barn</option>
+            <option value="Voksne">Voksen</option>
+        </select>
         <button class="button" onclick="tilføjSpiller()">Tilføj</button>
         <ul id="lobbyListe" class="spiller-liste"></ul>
         <div class="setting-box">
@@ -670,7 +692,7 @@ var spørgsmålData = [
         <button class="button grey" onclick="location.reload()">Afslut spil</button>
     </div>
 
-    <!-- Rettet lyd-sektion -->
+    <!-- Lyde rettet til tik-tak.mp3 -->
     <audio id="startLyd" src="start.mp3" preload="auto"></audio>
     <audio id="tikTakLyd" src="tik-tak.mp3" preload="auto"></audio>
     <audio id="tidUdløbetLyd" src="tidudloebet.mp3" preload="auto"></audio>
