@@ -19,7 +19,7 @@
 
         #setupSkærm { margin-bottom: 20px; }
         .spiller-liste { list-style: none; padding: 0; text-align: left; max-width: 300px; margin: 20px auto; }
-        .spiller-emne { background: #fff; padding: 10px; margin: 5px 0; border-radius: 5px; border-left: 5px solid #4caf50; display: flex; justify-content: space-between; }
+        .spiller-emne { background: #fff; padding: 10px; margin: 5px 0; border-radius: 5px; border-left: 5px solid #4caf50; display: flex; justify-content: space-between; align-items: center; }
 
         #spilSkærm { display: none; }
         #turIndikator { font-size: 2.2em; color: #2e8b57; font-weight: bold; margin: 15px 0; padding: 10px; background: #e0f2f1; border-radius: 10px; border: 2px solid #2e8b57; }
@@ -43,12 +43,12 @@
         .button.grey { background: #777; }
 
         input, select { font-size: 1.1em; padding: 10px; border-radius: 5px; border: 1px solid #ccc; margin: 5px; }
-        .setting-box { background: #fff; padding: 15px; border-radius: 10px; margin-top: 10px; text-align: left; }
+        .setting-box { background: #fff; padding: 15px; border-radius: 10px; margin-top: 10px; text-align: left; border: 1px solid #ddd; }
         audio { display: none; }
     </style>
 
     <script>
-        // --- HUSK AT INDSÆTTE DIN STORE SPØRGSMÅL-DATA HER ---
+        // HUSK AT INDSÆTTE DIN STORE LISTE AF SPØRGSMÅL HERUNDER
 var spørgsmålData = [
     {"Type": "Børn", "Spørgsmål": "Mim en dinosaur, der brøler"},
     {"Type": "Børn", "Spørgsmål": "Mim en person, der børster tænder"},
@@ -507,23 +507,26 @@ var spørgsmålData = [
         var voksneSpørgsmål = [];
         var tidTilbage;
         var timerInterval;
-        var spilMode = "stop"; // Standard: Stop ved rigtigt svar
+        var spilMode = "stop";
 
+        // LOBBY FUNKTIONER
         function tilføjSpiller() {
-            var navn = document.getElementById('spillerNavn').value;
-            var type = document.getElementById('spillerType').value;
-            if (navn.trim() === "") return alert("Indtast venligst et navn");
-            spillere.push({ navn: navn, type: type, point: 0 });
-            document.getElementById('spillerNavn').value = "";
-            opdaterLobbyListe();
-        }
+            var navnInput = document.getElementById('spillerNavn');
+            var typeInput = document.getElementById('spillerType');
+            
+            if (navnInput.value.trim() === "") {
+                alert("Indtast venligst et navn");
+                return;
+            }
 
-        function opdaterLobbyListe() {
-            var liste = document.getElementById('lobbyListe');
-            liste.innerHTML = "";
-            spillere.forEach((s, index) => {
-                liste.innerHTML += `<li class="spiller-emne"><span><strong>${s.navn}</strong> (${s.type})</span> <span style="cursor:pointer; color:red" onclick="fjernSpiller(${index})">✖</span></li>`;
+            spillere.push({ 
+                navn: navnInput.value.trim(), 
+                type: typeInput.value, 
+                point: 0 
             });
+
+            navnInput.value = ""; // Ryd feltet
+            opdaterLobbyListe();
         }
 
         function fjernSpiller(index) {
@@ -531,8 +534,23 @@ var spørgsmålData = [
             opdaterLobbyListe();
         }
 
+        function opdaterLobbyListe() {
+            var liste = document.getElementById('lobbyListe');
+            liste.innerHTML = "";
+            spillere.forEach((s, index) => {
+                liste.innerHTML += `
+                    <li class="spiller-emne">
+                        <span><strong>${s.navn}</strong> (${s.type})</span>
+                        <button onclick="fjernSpiller(${index})" style="background:none; border:none; color:red; cursor:pointer; font-weight:bold;">✖</button>
+                    </li>`;
+            });
+        }
+
         function startSpillet() {
-            if (spillere.length < 1) return alert("Tilføj mindst én spiller!");
+            if (spillere.length < 1) {
+                alert("Tilføj mindst én spiller!");
+                return;
+            }
             
             spilMode = document.getElementById('modeVælger').value;
             børnSpørgsmål = spørgsmålData.filter(q => q.Type === 'Børn');
@@ -544,6 +562,7 @@ var spørgsmålData = [
             visNæsteTur();
         }
 
+        // SPIL LOGIK
         function visNæsteTur() {
             var s = spillere[nuværendeSpillerIndex];
             document.getElementById('turIndikator').textContent = `Det er ${s.navn}s tur (${s.type})`;
@@ -554,7 +573,9 @@ var spørgsmålData = [
         function hentNytSpørgsmål() {
             var s = spillere[nuværendeSpillerIndex];
             var kilde = (s.type === 'Børn') ? børnSpørgsmål : voksneSpørgsmål;
+            
             if (kilde.length === 0) return "Ingen flere spørgsmål i denne kategori!";
+            
             var index = Math.floor(Math.random() * kilde.length);
             var opgave = kilde[index];
             kilde.splice(index, 1);
@@ -565,6 +586,7 @@ var spørgsmålData = [
             stopTimer();
             var spørgsmål = hentNytSpørgsmål();
             document.getElementById('spørgsmålViser').textContent = spørgsmål;
+            
             if (spørgsmål !== "Ingen flere spørgsmål i denne kategori!") {
                 var sek = (parseInt(document.getElementById('tidInput').value) || 1) * 60;
                 startTimer(sek);
@@ -581,11 +603,9 @@ var spørgsmålData = [
             spillere[nuværendeSpillerIndex].point++;
             opdaterScoreBoard();
 
-            if (spilMode === "fortsæt") {
-                // Tiden kører videre, bare giv nyt spørgsmål
+            if (spilMode === "fortsæt" && tidTilbage > 0) {
                 document.getElementById('spørgsmålViser').textContent = hentNytSpørgsmål();
             } else {
-                // Tiden stopper, og turen går videre
                 stopTimer();
                 næsteSpiller();
             }
@@ -615,10 +635,7 @@ var spørgsmålData = [
                     tikTak.pause();
                     document.getElementById('tidUdløbetLyd').play();
                     document.getElementById('timer').textContent = "TIDEN ER GÅET!";
-                    // Hvis man spiller i 'fortsæt' mode, skal turen skifte når tiden er gået
-                    if (spilMode === "fortsæt") {
-                        setTimeout(næsteSpiller, 2000); 
-                    }
+                    if (spilMode === "fortsæt") setTimeout(næsteSpiller, 2000);
                 }
                 tidTilbage--;
             }, 1000);
@@ -643,8 +660,9 @@ var spørgsmålData = [
 </head>
 <body>
 
-    <h1>Gæt & Grimasser 2025 🎭</h1>
+    <h1>Gæt & Grimasser 🎭</h1>
 
+    <!-- LOBBY -->
     <div id="setupSkærm" class="container">
         <h2>Lobby: Tilføj spillere</h2>
         <input type="text" id="spillerNavn" placeholder="Navn på spiller">
@@ -659,28 +677,29 @@ var spørgsmålData = [
         <div class="setting-box">
             <strong>Indstillinger:</strong><br>
             <label>Tid pr. runde (min): </label>
-            <input type="number" id="tidInput" value="1" min="1" style="width: 50px;"><br>
+            <input type="number" id="tidInput" value="1" min="1" style="width: 60px;"><br>
             
-            <label>Ved rigtigt svar: </label>
+            <label>Ved "Rigtigt!": </label>
             <select id="modeVælger">
-                <option value="stop">Stop tid og skift spiller (1 point pr. tur)</option>
-                <option value="fortsæt">Tiden kører videre (saml så mange point du kan!)</option>
+                <option value="stop">Stop tid og skift spiller</option>
+                <option value="fortsæt">Tiden kører videre (saml flere point)</option>
             </select>
         </div>
         <br>
         <button class="button blue" style="width: 100%;" onclick="startSpillet()">START SPILLET</button>
     </div>
 
+    <!-- SPILLET -->
     <div id="spilSkærm" class="container">
         <div id="turIndikator"></div>
         <div id="timer"></div>
-        <div id="spørgsmålViser">Tryk på start</div>
+        <div id="spørgsmålViser">Klar?</div>
         
         <br>
-        <button class="button blue" onclick="startNæsteSpørgsmål()">Start tur / Nyt spørgsmål</button>
+        <button class="button blue" onclick="startNæsteSpørgsmål()">Start tur</button>
         <button class="button orange" onclick="pasSpørgsmål()">Pas</button>
         <button class="button" onclick="rigtigtSvar()">Rigtigt!</button>
-        <button class="button red" onclick="givOp()">Giv op / Næste spiller</button>
+        <button class="button red" onclick="givOp()">Giv op / Næste</button>
         
         <div class="score-board" id="scoreBoard"></div>
         <br>
